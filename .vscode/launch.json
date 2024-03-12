@@ -12,6 +12,9 @@
       "args": [],
       "console": "integratedTerminal",
       "cwd": "${workspaceFolder}/src",
+      "env": {
+        "PYTORCH_CUDA_ALLOC_CONF":"expandable_segments:True"
+      },
       "justMyCode": true
     }
   ]
