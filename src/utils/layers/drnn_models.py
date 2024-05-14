@@ -7,11 +7,16 @@ from utils.layers.drnn_cells import DLSTMCell
 class DLSTM(nn.Module):
     def __init__(self, input_size, hidden_size, num_nodes, num_layers=1, bias=True, output_size=1):
         super(DLSTM, self).__init__()
+        # 32*474
         self.input_size = input_size
+        # 16*474*2
         self.hidden_size = hidden_size
+        # 1
         self.num_layers = num_layers
         self.bias = bias
+        # 474
         self.num_nodes = num_nodes
+        # 1
         self.output_size = output_size
 
         self.rnn_cell_list = nn.ModuleList()

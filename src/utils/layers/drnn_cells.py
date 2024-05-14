@@ -9,6 +9,7 @@ class LayerParams:
         self._rnn_network = rnn_network
         self._params_dict = {}
         self._biases_dict = {}
+        # rnn_parmas
         self._type = layer_type
         self.weights = None
         self.biases = None
@@ -36,10 +37,12 @@ class LayerParams:
 class DLSTMCell(nn.Module):
     def __init__(self, input_size, hidden_size, bias, num_nodes):
         super(DLSTMCell, self).__init__()
+        # 32*474
         self.input_size = input_size
         self.hidden_size = hidden_size
         self.bias = bias
         self.num_nodes = num_nodes
+        # 32*474 // 474
         self.rnn_units = hidden_size // num_nodes
         self._num_nodes = num_nodes
         self._memory_dim = 16

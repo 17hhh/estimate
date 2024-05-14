@@ -53,26 +53,29 @@ class Model(nn.Module):
         self.mlp_2 = nn.Linear(mlp_hidden, 1)
 
     def forward(self, inputs):        
-        
+        #(32,20,474,12)
         inputs = self.embedding(inputs)
-        
+        # （32, 474, 20, 32）
         inputs = inputs.permute(0, 2, 1, 3) # batch_size, seq_len, num_stock, num_feature
-        
+        #(32,20,15168)
         inputs = torch.reshape(inputs, (-1 , self.seq_len, self.embedding_dim * self.num_stock))
-        
+       #(32,20,20)
         slf_attn_mask = get_subsequent_mask(inputs).bool()                
-        
+        #(32,20,15168)
         output, _ = self.lstm1(inputs)
-        output = self.ln_1(output)                
+        #(32,20,15168)           
+        output = self.ln_1(output)  
+        #(32,20,7584)
         enc_output, _ = self.lstm2(output)
+        #(32,20,7584)
         enc_output, enc_slf_attn = self.temp_attn(
             enc_output, enc_output, enc_output, mask=slf_attn_mask.bool())
-        
         enc_output = torch.reshape(enc_output, (-1, self.seq_len, self.num_stock, self.rnn_hidden_unit))
         enc_output = self.dropout(enc_output)  
+        #(32,474,20,16)
         enc_output = enc_output.permute(0, 2, 1, 3)
-        
         outputs = []
+        # 超图
         for i in range(enc_output.shape[0]):
             x = enc_output[i].reshape(self.num_stock, self.seq_len * self.rnn_hidden_unit)
             channel_feature = []
@@ -95,9 +98,12 @@ class Model(nn.Module):
         
         enc_output = torch.cat((enc_output, hyper_output), dim = 3)
         
-        output = self.mlp_1(enc_output)        
+        output = self.mlp_1(enc_output)    
+        #  [32, 474, 20, 16]   
         output = F.relu(output)
-        output = self.mlp_2(output)              
+        #  （32，474，20，1）
+        output = self.mlp_2(output)     
+        #  （32，474，20）
         output = torch.reshape(output, (-1, self.num_stock, self.seq_len))
             
         return output

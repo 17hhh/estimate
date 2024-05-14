@@ -57,7 +57,7 @@ class DataLoader(DataLoaderBase):
         buy_prob_threshold = []
         sell_prob_threshold = []
         print("Downloading data...")
-        for sym in self._symbols:
+        for sym in self._symbols: #获取每种股票当前的训练数据和测试数据
             train_data = get_data_baseline(sym, start_train, end_train, self._his_window + self._max_slow_period, self._n_step_ahead)
             train_data_storage[sym] = train_data
             test_data = get_data_baseline(sym, start_test, end_test, self._his_window + self._max_slow_period, self._n_step_ahead)

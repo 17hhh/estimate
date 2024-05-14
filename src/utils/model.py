@@ -33,8 +33,11 @@ def dump_config(config, path):
         yaml.dump(config, outfile, default_flow_style=False)
 
 def eval_long_acc(gts, preds, confidence_threshold = 0):
+    # 筛选出涨幅大于阈值的结果
     res = gts[preds > confidence_threshold]
+    #共有 6840个
     total = len(res)
+    # 筛选出上涨的：4121
     num_true = len(res[res > 0])
     if total > 0:
         acc = num_true / total
@@ -44,6 +47,7 @@ def eval_long_acc(gts, preds, confidence_threshold = 0):
     return acc, num_true
 
 def eval_short_acc(gts, preds, confidence_threshold = 0):
+    # preds:[40,474], confidence_threshold:(474,)
     res = gts[preds < confidence_threshold]
     total = len(res)
     num_true = len(res[res < 0])
@@ -65,12 +69,15 @@ def eval_rank_ic(gts, preds):
     for i in range(gts.shape[0]):
         rank_ics.append(stats.spearmanr(gts[i], preds[i])[0])
     return np.asanyarray(rank_ics)
-
+ 
 def eval_long_prec(gts, preds, K=1):
     long_precs = []
+    # gts:shape(42,474),size:19908
     for i in range(gts.shape[0]):
+        # 474
         pred = preds[i]
         gt = gts[i]
+        # 找出pred中前K大的元素的位置索引(涨幅最大的前K个)
         top_k_largest = np.argpartition(pred, -K)[-K:]
         top_return = gt[top_k_largest] * pred[top_k_largest]
         prec = len(top_return[top_return > 0]) / len(top_return)
@@ -82,6 +89,7 @@ def eval_short_prec(gts, preds, K=1):
     for i in range(gts.shape[0]):
         pred = preds[i]
         gt = gts[i]
+        # 丢掉最小的K-1个数据
         top_k_smallest = np.argpartition(pred, K)[K:]
         top_return = gt[top_k_smallest] * pred[top_k_smallest]
         prec = len(top_return[top_return > 0]) / len(top_return)
@@ -91,7 +99,9 @@ def eval_short_prec(gts, preds, K=1):
 
 def eval_all_metrics(gts, preds):
     dict_metrics = {}
+    # 平均绝对误差 gts:18960=474*40
     mae = eval_mae(gts, preds)
+    # 均方根差
     rmse = eval_rmse(gts, preds)
     long_acc = eval_long_acc(gts, preds, -np.mean(gts, axis=0))[0]
     short_acc = eval_short_acc(gts, preds, np.mean(gts, axis=0))[0]
@@ -111,3 +121,5 @@ def eval_all_metrics(gts, preds):
     dict_metrics["short_k_prec"] = np.mean(short_k_precs)
     
     return dict_metrics
+
+

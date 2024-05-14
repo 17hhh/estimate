@@ -4,7 +4,7 @@ import numpy as np
 
 def get_subsequent_mask(seq):
     ''' For masking out the subsequent info. '''
-
+    #16，20 
     sz_b, len_s = seq.size(0), seq.size(1)
     subsequent_mask = torch.triu(
         torch.ones((len_s, len_s), device=seq.device, dtype=torch.uint8), diagonal=1)

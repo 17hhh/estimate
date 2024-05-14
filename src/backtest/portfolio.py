@@ -17,8 +17,10 @@ class PortfolioManagement:
     """    
     def __init__(self, config):
         self._portfolio = {}
+        # 佣金、手续费
         self._buy_commission = config["buy_commission"]
         self._sell_commission = config["sell_commission"]
+        # 预算=初始资金
         self._budget = config["initial_equity"] * (1 - config["per_cash"])
         self._t_plus = config["t_plus"]
         self._portfolio_history = {}

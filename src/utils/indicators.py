@@ -36,8 +36,10 @@ def volume_ratio(df, features, periods):
     
     return df, features
 
+# 收盘价在一个时间窗口的简单移动平均线
 def close_sma(df, features, periods):
     stockstat = Sdf.retype(df.copy())
+    # periods:[10,20]
     for period in periods:
         df["close_sma_{}".format(period)] = stockstat["close_{}_sma".format(period)]
         df["close_sma_{}_ratio".format(period)] = get_ratio(df["close"], stockstat["close_{}_sma".format(period)])
